@@ -1,4 +1,5 @@
 import { ContractInput, FunctionPanel, Header } from "./components";
+import { ContractsTab } from "./components/ContractsTab";
 import { useContracts } from "./hooks/useContracts";
 
 function App() {
@@ -10,7 +11,7 @@ function App() {
 
       <div className="flex w-full max-w-screen-md flex-col gap-4 px-4">
         <ContractInput />
-        <div className="tabs tabs-boxed mx-auto"></div>
+        <ContractsTab />
         {contract &&
           Object.entries(contract.interface.functions)
             .filter(([name]) => /\w*\([\w\W]*\)/g.test(name))
