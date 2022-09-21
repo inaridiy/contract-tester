@@ -45,7 +45,8 @@
         "patterns": ["@/features/*/*"]
       }
     ],
-    "tailwindcss/no-custom-classname": "off"
+    "tailwindcss/no-custom-classname": "off",
+    "@typescript-eslint/no-misused-promises": "off"
   },
   "overrides": [{ "files": ["src/**/*.ts", "src/**/*.tsx"] }]
 }
