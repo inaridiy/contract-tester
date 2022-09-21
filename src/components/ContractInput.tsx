@@ -8,10 +8,9 @@ export const ContractInput = () => {
   const { loadContract, contractData } = useContracts();
 
   useEffect(() => {
-    if (!contractData) return;
-    setValue("tag", contractData.tag);
-    setValue("address", contractData.address);
-    setValue("abi", contractData.abi);
+    setValue("tag", contractData?.tag || "");
+    setValue("address", contractData?.address || "");
+    setValue("abi", contractData?.abi || "");
   }, [contractData, setValue]);
 
   return (

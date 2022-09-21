@@ -17,3 +17,20 @@ export const useLoadContract = () => {
   );
   return { loadContract };
 };
+
+export const useRemoveContract = () => {
+  const removeContract = useRecoilCallback(
+    ({ set, snapshot }) =>
+      (tag: string) => {
+        const dataListLoadable = snapshot.getLoadable(ContractDataListState);
+        const dataList = dataListLoadable.getValue();
+        const { [tag]: _, ...other } = dataList;
+        set(ContractDataListState, {
+          ...other,
+        });
+        set(ContractTagState, null);
+      },
+    []
+  );
+  return { removeContract };
+};

@@ -1,4 +1,4 @@
-import { useLoadContract } from "@/state/contract";
+import { useLoadContract, useRemoveContract } from "@/state/contract";
 import {
   ContractDataListState,
   ContractTagState,
@@ -8,6 +8,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 
 export const useContracts = () => {
   const { loadContract } = useLoadContract();
+  const { removeContract } = useRemoveContract();
   const contractDataList = useRecoilValue(ContractDataListState);
   const [contractTag, setContractTag] = useRecoilState(ContractTagState);
   const contract = useRecoilValue(ContractSelector);
@@ -15,6 +16,7 @@ export const useContracts = () => {
 
   return {
     loadContract,
+    removeContract,
     contractDataList,
     contractTag,
     setContractTag,
