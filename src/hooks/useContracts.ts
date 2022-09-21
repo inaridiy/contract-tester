@@ -11,7 +11,7 @@ export const useContracts = () => {
   const contractDataList = useRecoilValue(ContractDataListState);
   const contractTag = useRecoilValue(ContractTagState);
   const contract = useRecoilValue(ContractSelector);
-  const contractData = contractDataList[contractTag || "null"] && { tag: "" };
+  const contractData = contractTag ? contractDataList[contractTag] : null;
 
   return {
     loadContract,

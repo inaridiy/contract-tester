@@ -1,10 +1,18 @@
 import { useContracts } from "@/hooks/useContracts";
 import { ContractData } from "@/state/contract/types";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 export const ContractInput = () => {
-  const { register, handleSubmit } = useForm<ContractData>();
-  const { loadContract } = useContracts();
+  const { register, handleSubmit, setValue } = useForm<ContractData>();
+  const { loadContract, contractData } = useContracts();
+
+  useEffect(() => {
+    if (!contractData) return;
+    setValue("tag", contractData.tag);
+    setValue("address", contractData.address);
+    setValue("abi", contractData.abi);
+  }, [contractData, setValue]);
 
   return (
     <form
