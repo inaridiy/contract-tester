@@ -22,13 +22,18 @@ export const FunctionPanel: React.FC<{
     setIsLoading(true);
 
     try {
+      console.log(fragment.inputs);
       const fixedArgs = args.map((value, i) =>
-        fragment.inputs[i].baseType !== "array"
+        fragment.inputs[i].baseType === "array"
           ? value
-          : value
               .slice(1, -1)
               .split(",")
               .map((v) => v.trim())
+          : fragment.inputs[i].baseType === "bool"
+          ? value === "true"
+            ? true
+            : false
+          : value
       );
       // eslint-disable-next-line
       const result = await contract[name](...fixedArgs, {
