@@ -22,7 +22,6 @@ export const FunctionPanel: React.FC<{
     setIsLoading(true);
 
     try {
-      console.log(fragment.inputs);
       const fixedArgs = args.map((value, i) =>
         fragment.inputs[i].baseType === "array"
           ? value
