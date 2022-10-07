@@ -67,15 +67,9 @@ export const EncodePanel = () => {
       if (func instanceof FunctionFragment) {
         const result =
           target === "FunctionData"
-            ? contract.interface.decodeFunctionData(
-                func,
-                JSON.parse(inputValue) as never
-              )
+            ? contract.interface.decodeFunctionData(func, inputValue)
             : target === "FunctionResult"
-            ? contract.interface.decodeFunctionResult(
-                func,
-                JSON.parse(inputValue) as never
-              )
+            ? contract.interface.decodeFunctionResult(func, inputValue)
             : "";
         setResult(JSON.stringify(result, null, "\t"));
       } else if (func instanceof EventFragment) {
