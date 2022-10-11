@@ -19,6 +19,7 @@ export const EthersPlayground = () => {
   const { contract } = useContracts();
   const [code, setCode] = useState(demoCode);
   const [results, setResults] = useState<string[]>([]);
+  const [error, setError] = useState("");
 
   const runScript = async () => {
     // @ts-expect-error: YEAH
@@ -29,13 +30,18 @@ export const EthersPlayground = () => {
     window.contract = contract;
 
     const backup = console.log;
-    let resultTmp = results;
-    window.console.log = (any) => {
-      resultTmp = [...resultTmp, String(any)];
-    };
-    await eval(`(async ()=>{${code}})()`);
-    window.console.log = backup;
-    setResults(resultTmp);
+    try {
+      let resultTmp = results;
+      window.console.log = (any) => {
+        resultTmp = [...resultTmp, String(any)];
+      };
+      await eval(`(async ()=>{${code}})()`);
+      setResults(resultTmp);
+    } catch (e) {
+      setError(String(e));
+    } finally {
+      window.console.log = backup;
+    }
   };
 
   useEffect(() => {
@@ -67,6 +73,9 @@ export const EthersPlayground = () => {
             </pre>
           ))}
         </pre>
+      )}
+      {error && (
+        <div className="text-error text-lg font-bold">Error: {error}</div>
       )}
     </div>
   );
