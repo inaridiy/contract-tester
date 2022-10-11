@@ -1,4 +1,5 @@
 import { useContracts } from "@/hooks/useContracts";
+import { useToolData } from "@/state/contract";
 import { EventFragment, FunctionFragment } from "ethers/lib/utils";
 import React, { useCallback, useState } from "react";
 
@@ -8,7 +9,7 @@ export const EncodePanel = () => {
     null
   );
   const [target, setTarget] = useState("");
-  const [inputValue, setInputValue] = useState("");
+  const { toolData, setByteCode } = useToolData();
   const [result, setResult] = useState("");
   const [error, setError] = useState("");
 
@@ -36,12 +37,12 @@ export const EncodePanel = () => {
           target === "FunctionData"
             ? contract.interface.encodeFunctionData(
                 func,
-                JSON.parse(inputValue) as never
+                JSON.parse(toolData.byteCode) as never
               )
             : target === "FunctionResult"
             ? contract.interface.encodeFunctionResult(
                 func,
-                JSON.parse(inputValue) as never
+                JSON.parse(toolData.byteCode) as never
               )
             : "";
         setResult(result);
@@ -50,7 +51,7 @@ export const EncodePanel = () => {
           target === "EventLog"
             ? contract.interface.encodeEventLog(
                 func,
-                JSON.parse(inputValue) as never
+                JSON.parse(toolData.byteCode) as never
               )
             : "";
         setResult(JSON.stringify(result, null, "\t"));
@@ -59,7 +60,7 @@ export const EncodePanel = () => {
       setError(String((e as Error).message) || "Some Error Happen");
       console.error(e);
     }
-  }, [contract, func, inputValue, target]);
+  }, [contract, func, toolData.byteCode, target]);
 
   const decode = useCallback(() => {
     if (!func || !contract) return;
@@ -67,9 +68,9 @@ export const EncodePanel = () => {
       if (func instanceof FunctionFragment) {
         const result =
           target === "FunctionData"
-            ? contract.interface.decodeFunctionData(func, inputValue)
+            ? contract.interface.decodeFunctionData(func, toolData.byteCode)
             : target === "FunctionResult"
-            ? contract.interface.decodeFunctionResult(func, inputValue)
+            ? contract.interface.decodeFunctionResult(func, toolData.byteCode)
             : "";
         setResult(JSON.stringify(result, null, "\t"));
       } else if (func instanceof EventFragment) {
@@ -77,7 +78,7 @@ export const EncodePanel = () => {
           target === "EventLog"
             ? contract.interface.decodeEventLog(
                 func,
-                JSON.parse(inputValue) as never
+                JSON.parse(toolData.byteCode) as never
               )
             : "";
         setResult(JSON.stringify(result, null, "\t"));
@@ -86,7 +87,7 @@ export const EncodePanel = () => {
       setError(String((e as Error).message) || "Some Error Happen");
       console.error(e);
     }
-  }, [contract, func, inputValue, target]);
+  }, [contract, func, toolData.byteCode, target]);
 
   if (!contract) return <></>;
   return (
@@ -133,7 +134,8 @@ export const EncodePanel = () => {
       <textarea
         className="input bg-base-200 h-56 resize-none py-2 text-lg"
         placeholder="Type byte Data"
-        onChange={(e) => setInputValue(e.target.value)}
+        value={toolData.byteCode}
+        onChange={(e) => setByteCode(e.target.value)}
       />
       {result && (
         <div className="text-lg font-bold">
