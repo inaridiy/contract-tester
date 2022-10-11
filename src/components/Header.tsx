@@ -3,7 +3,7 @@ import { useWeb3 } from "@/hooks/useWeb3";
 export const Header = () => {
   const { provider, connectWallet } = useWeb3();
   return (
-    <header className="w-full max-w-screen-lg">
+    <header className="fixed z-10 w-full max-w-screen-lg">
       <nav className="navbar justify-between">
         <button className="btn btn-ghost px-2 text-lg normal-case sm:text-2xl">
           Contract Tester
