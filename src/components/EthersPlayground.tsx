@@ -1,13 +1,23 @@
 import { useContracts } from "@/hooks/useContracts";
 import { useWeb3 } from "@/hooks/useWeb3";
-import Editor from "@monaco-editor/react";
+import Editor, { useMonaco } from "@monaco-editor/react";
 import { ethers } from "ethers";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+const demoCode = `/* already imported ethers for global
+inserted Web3Provider as provider to global
+inserted Loaded Contract as contract */
+
+const signer = provider.getSigner();
+const address = await signer.getAddress();
+const balance = await provider.getBalance(address);
+console.log(\`\${address} has \${ethers.utils.formatEther(balance)}ETH\`);
+`;
 
 export const EthersPlayground = () => {
+  const monaco = useMonaco();
   const { provider } = useWeb3();
   const { contract } = useContracts();
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState(demoCode);
   const [results, setResults] = useState<string[]>([]);
 
   const runScript = async () => {
@@ -28,13 +38,22 @@ export const EthersPlayground = () => {
     setResults(resultTmp);
   };
 
+  useEffect(() => {
+    if (monaco) {
+      monaco.languages.typescript.javascriptDefaults.addExtraLib(
+        "export declare function foo():string;",
+        "file:///node_modules/@types/index.d.ts"
+      );
+    }
+  }, [monaco]);
+
   return (
     <div className="card bg-base-100 gap-4 py-4 shadow-lg">
       <h2 className="px-4 text-2xl font-bold">Ethers Playground</h2>
       <Editor
         height="32vh"
         defaultLanguage="javascript"
-        defaultValue="//already imported ethers for global"
+        defaultValue={demoCode}
         onChange={(e) => setCode(e || "")}
       />
       <button className="btn btn-primary mx-4" onClick={runScript}>

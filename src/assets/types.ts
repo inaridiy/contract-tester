@@ -1,4 +1,4 @@
-declare module 'ethers' {
+export const globalTypes = `declare module 'ethers' {
   import * as ethers from "ethers/ethers";
   export { ethers };
   export { Signer, Wallet, VoidSigner, getDefaultProvider, providers, BaseContract, Contract, ContractFactory, BigNumber, FixedNumber, constants, errors, logger, utils, wordlists, version, ContractFunction, ContractReceipt, ContractTransaction, Event, EventFilter, Overrides, PayableOverrides, CallOverrides, PopulatedTransaction, ContractInterface, TypedDataDomain, TypedDataField, BigNumberish, Bytes, BytesLike, Signature, Transaction, UnsignedTransaction, Wordlist } from "ethers/ethers";
@@ -65,3 +65,9 @@ declare module 'ethers/_version' {
   export const version = "ethers/5.7.1";
 }
 
+declare global {
+  interface Window {
+    ethers
+  }
+}
+`;
