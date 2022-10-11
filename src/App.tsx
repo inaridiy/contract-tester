@@ -5,6 +5,7 @@ import {
   Header,
 } from "./components";
 import { ContractsTab } from "./components/ContractsTab";
+import { EthersPlayground } from "./components/EthersPlayground";
 import { useContracts } from "./hooks/useContracts";
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
         <ContractInput />
         <ContractsTab />
         <EncodePanel />
+        <EthersPlayground />
         {contract &&
           Object.entries(contract.interface.functions)
             .filter(([name]) => /\w*\([\w\W]*\)/g.test(name))
