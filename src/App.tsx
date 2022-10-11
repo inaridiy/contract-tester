@@ -15,7 +15,7 @@ function App() {
     <div className="bg-base-200 relative flex min-h-screen flex-col items-center">
       <Header />
 
-      <div className="mt-24 flex w-full max-w-screen-md flex-col gap-4 px-4">
+      <div className="my-24 flex w-full max-w-screen-md flex-col gap-4 px-4">
         <ContractInput />
         <ContractsTab />
         <EncodePanel />
