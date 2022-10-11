@@ -1,5 +1,6 @@
-import { useRecoilCallback } from "recoil";
+import { useRecoilCallback, useRecoilState } from "recoil";
 import { ContractDataListState, ContractTagState } from "./atoms";
+import { ToolDataSelector } from "./selector";
 import { ContractData } from "./types";
 
 export const useLoadContract = () => {
@@ -33,4 +34,12 @@ export const useRemoveContract = () => {
     []
   );
   return { removeContract };
+};
+
+export const useToolData = () => {
+  const [toolData, setToolData] = useRecoilState(ToolDataSelector);
+  const setScript = (script: string) => setToolData({ ...toolData, script });
+  const setByteCode = (byteCode: string) =>
+    setToolData({ ...toolData, byteCode });
+  return { toolData, setToolData, setScript, setByteCode };
 };

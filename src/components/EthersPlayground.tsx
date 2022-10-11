@@ -1,23 +1,15 @@
 import { useContracts } from "@/hooks/useContracts";
 import { useWeb3 } from "@/hooks/useWeb3";
+import { useToolData } from "@/state/contract";
 import Editor, { useMonaco } from "@monaco-editor/react";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
-const demoCode = `/* already imported ethers for global
-inserted Web3Provider as provider to global
-inserted Loaded Contract as contract */
-
-const signer = provider.getSigner();
-const address = await signer.getAddress();
-const balance = await provider.getBalance(address);
-console.log(\`\${address} has \${ethers.utils.formatEther(balance)}ETH\`);
-`;
 
 export const EthersPlayground = () => {
   const monaco = useMonaco();
   const { provider } = useWeb3();
-  const { contract } = useContracts();
-  const [code, setCode] = useState(demoCode);
+  const { contract, contractTag } = useContracts();
+  const { toolData, setScript } = useToolData();
   const [results, setResults] = useState<string[]>([]);
   const [error, setError] = useState("");
 
@@ -30,12 +22,13 @@ export const EthersPlayground = () => {
     window.contract = contract;
 
     const backup = console.log;
+    setError("");
     try {
       let resultTmp = results;
       window.console.log = (any) => {
         resultTmp = [...resultTmp, String(any)];
       };
-      await eval(`(async ()=>{${code}})()`);
+      await eval(`(async ()=>{${toolData.script}})()`);
       setResults(resultTmp);
     } catch (e) {
       setError(String(e));
@@ -46,10 +39,25 @@ export const EthersPlayground = () => {
 
   useEffect(() => {
     if (monaco) {
-      monaco.languages.typescript.javascriptDefaults.addExtraLib(
-        "export declare function foo():string;",
-        "file:///node_modules/@types/index.d.ts"
-      );
+      // // monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+      // //   allowNonTsExtensions: true,
+      // //   moduleResolution:
+      // //     monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+      // //   module: monaco.languages.typescript.ModuleKind.CommonJS,
+      // //   noEmit: true,
+      // //   typeRoots: ["node_modules/@types"],
+      // // });
+      // monaco.languages.typescript.typescriptDefaults.addExtraLib(
+      //   "export declare function add(a: number, b: number): number",
+      //   "node_modules/@types/external/index.d.ts"
+      // );
+      // monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+      //   noSemanticValidation: false,
+      //   noSyntaxValidation: false,
+      // });
+      // console.log(
+      //   monaco.languages.typescript.typescriptDefaults.getExtraLibs()
+      // );
     }
   }, [monaco]);
 
@@ -59,14 +67,15 @@ export const EthersPlayground = () => {
       <Editor
         height="32vh"
         defaultLanguage="javascript"
-        defaultValue={demoCode}
-        onChange={(e) => setCode(e || "")}
+        path={`files:///${contractTag || "default"}.js`}
+        defaultValue={toolData.script}
+        onChange={(e) => setScript(e || "")}
       />
       <button className="btn btn-primary mx-4" onClick={runScript}>
         Run
       </button>
       {results.length > 0 && (
-        <pre className="mockup-code mx-4 overflow-x-auto">
+        <pre className="mockup-code mx-4 overflow-x-auto pl-2">
           {results.map((result, i) => (
             <pre data-prefix="$" key={`${i}/${result}`}>
               <code>{result}</code>
