@@ -32,7 +32,7 @@ export const EthersPlayground = () => {
     <div className="card bg-base-100 gap-4 py-4 shadow-lg">
       <h2 className="px-4 text-2xl font-bold">Ethers Playground</h2>
       <Editor
-        height="45vh"
+        height="32vh"
         defaultLanguage="javascript"
         defaultValue="//already imported ethers for global"
         onChange={(e) => setCode(e || "")}
