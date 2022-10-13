@@ -6,6 +6,7 @@ import {
 } from "./components";
 import { ContractsTab } from "./components/ContractsTab";
 import { EthersPlayground } from "./components/EthersPlayground";
+import { Footer } from "./components/Footer";
 import { useContracts } from "./hooks/useContracts";
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
               />
             ))}
       </div>
+      <Footer />
     </div>
   );
 }
