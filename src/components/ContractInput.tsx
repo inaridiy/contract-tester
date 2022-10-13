@@ -11,6 +11,7 @@ export const ContractInput = () => {
     setValue("tag", contractData?.tag || "");
     setValue("address", contractData?.address || "");
     setValue("abi", contractData?.abi || "");
+    setValue("backProxy", contractData?.backProxy || false);
   }, [contractData, setValue]);
 
   return (
@@ -30,11 +31,22 @@ export const ContractInput = () => {
         placeholder="Contract Address"
         {...register("address", { required: true })}
       />
+
       <textarea
         className="input h-56 resize-none py-2 text-lg shadow-lg"
         placeholder="Contract Abi (optional)"
         {...register("abi", { required: false })}
       />
+      <div className="bg-base-100 card rounded-lg px-2 shadow-lg">
+        <label className="label cursor-pointer">
+          <span className="text-lg font-bold">Read beyond the proxy</span>
+          <input
+            type="checkbox"
+            className="checkbox"
+            {...register("backProxy", { required: false })}
+          />
+        </label>
+      </div>
       <button type="submit" className="btn">
         Load
       </button>

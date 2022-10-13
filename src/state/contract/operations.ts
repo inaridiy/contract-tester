@@ -19,7 +19,9 @@ export const useLoadContract = () => {
 
         const abi =
           data.abi ||
-          (await loadAbi(provider as ethers.providers.Provider, data.address));
+          (await loadAbi(provider as ethers.providers.Provider, data.address, {
+            backProxy: data.backProxy,
+          }));
 
         set(ContractDataListState, {
           ...dataListLoadable.getValue(),
