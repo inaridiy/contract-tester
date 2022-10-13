@@ -19,7 +19,7 @@ export const useLoadContract = () => {
         const abi =
           data.abi ||
           (await loadAbi(provider as ethers.providers.Provider, data.address));
-        console.log(abi);
+
         set(ContractDataListState, {
           ...dataListLoadable.getValue(),
           [data.tag || ""]: { ...data, abi },

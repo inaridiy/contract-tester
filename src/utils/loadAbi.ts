@@ -14,12 +14,17 @@ export const loadAbi = async (
 
   const signatureLookup = new whatsabi.loaders.SamczunSignatureLookup();
   const abiLike = whatsabi.abiFromBytecode(code);
+
   const abi = await Promise.all(
-    abiLike.map((funcOrEvent, i) =>
+    abiLike.map((funcOrEvent) =>
       funcOrEvent.type === "function"
         ? signatureLookup
             .loadFunctions(funcOrEvent.selector)
-            .then((value) => (value[0] ? `function ${value[0]}` : ""))
+            .then((value) =>
+              value[0]
+                ? `function ${value[0]} ${funcOrEvent.payable ? "payable" : ""}`
+                : ""
+            )
         : signatureLookup
             .loadEvents(funcOrEvent.hash)
             .then((value) => (value[0] ? `event ${value[0]}` : ""))
