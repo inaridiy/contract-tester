@@ -1,3 +1,5 @@
+import { useContracts } from "@/hooks/useContracts";
+import { useWeb3 } from "@/hooks/useWeb3";
 import clsx from "clsx";
 import { Contract, ethers } from "ethers";
 import { FunctionFragment } from "ethers/lib/utils";
@@ -8,6 +10,8 @@ export const FunctionPanel: React.FC<{
   contract: Contract;
   fragment: FunctionFragment;
 }> = ({ name, contract, fragment }) => {
+  const { provider } = useWeb3();
+  const { contractData } = useContracts();
   const [payValue, setPayValue] = useState("");
   const [args, setArgs] = useState<string[]>(
     Array(fragment.inputs.length).fill("")
@@ -16,7 +20,7 @@ export const FunctionPanel: React.FC<{
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const runFunction = async () => {
+  const runFunction = async ({ call = false } = {}) => {
     setResult("");
     setError("");
     setIsLoading(true);
@@ -34,11 +38,24 @@ export const FunctionPanel: React.FC<{
             : false
           : value
       );
-      // eslint-disable-next-line
-      const result = await contract[name](...fixedArgs, {
-        value: ethers.utils.parseEther(payValue || "0"),
-      });
-      setResult(JSON.stringify(result, null, "\t"));
+      /* eslint-disable */
+      if (call && contractData?.fuzzy) {
+        const calldata = await contract.interface.encodeFunctionData(
+          fragment,
+          fixedArgs
+        );
+        const result = await provider?.call({
+          to: contract.address,
+          data: calldata,
+        });
+        setResult(ethers.utils.hexStripZeros(result));
+      } else {
+        const result = await contract[name](...fixedArgs, {
+          value: ethers.utils.parseEther(payValue || "0"),
+        });
+        setResult(JSON.stringify(result, null, "\t"));
+      }
+      /* eslint-enable */
     } catch (e) {
       setError(String((e as Error).message) || "Some Error Happen");
       console.error(e);
@@ -88,12 +105,28 @@ export const FunctionPanel: React.FC<{
       {error && (
         <div className="text-error text-lg font-bold">Error: {error}</div>
       )}
-      <button
-        className={clsx("btn btn-primary", isLoading && "disabled loading")}
-        onClick={() => void runFunction()}
-      >
-        Run
-      </button>
+      <div className="flex gap-2">
+        <button
+          className={clsx(
+            "btn btn-primary flex-1",
+            isLoading && "disabled loading"
+          )}
+          onClick={() => void runFunction()}
+        >
+          Run
+        </button>
+        {contractData?.fuzzy && (
+          <button
+            className={clsx(
+              "btn btn-secondary flex-1",
+              isLoading && "disabled loading"
+            )}
+            onClick={() => void runFunction({ call: true })}
+          >
+            Call
+          </button>
+        )}
+      </div>
     </div>
   );
 };

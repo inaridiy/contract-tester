@@ -15,6 +15,7 @@ export const useLoadContract = () => {
         const provider = providerLoadable.getValue();
 
         if (!data.abi && !provider) return;
+        if (!data.abi) data.fuzzy = true;
 
         const abi =
           data.abi ||

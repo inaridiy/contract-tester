@@ -12,7 +12,8 @@ export const getBackProxy = async (
 ): Promise<string | null> => {
   for (const slot of slots) {
     const slotValue = await provider.getStorageAt(address, slot);
-    const maybeAddress = ethers.utils.hexDataSlice(slotValue, 0, 96); //256bit => 160bit
+    const maybeAddress = ethers.utils.hexDataSlice(slotValue, 12); //256bit => 160bit
+
     if (ethers.utils.isAddress(maybeAddress)) return maybeAddress;
   }
   return null;

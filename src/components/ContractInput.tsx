@@ -32,7 +32,7 @@ export const ContractInput = () => {
       />
       <textarea
         className="input h-56 resize-none py-2 text-lg shadow-lg"
-        placeholder="Contract Abi"
+        placeholder="Contract Abi (optional)"
         {...register("abi", { required: false })}
       />
       <button type="submit" className="btn">

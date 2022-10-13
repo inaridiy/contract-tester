@@ -7,6 +7,7 @@ export const loadAbi = async (
   _address: string,
   { backProxy = true }: { backProxy?: boolean } = {}
 ) => {
+  //  / console.log(await getBackProxy(provider, _address));
   const address = backProxy
     ? (await getBackProxy(provider, _address)) || _address
     : _address;
