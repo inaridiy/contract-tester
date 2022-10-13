@@ -1,4 +1,7 @@
+import { loadAbi } from "@/utils/loadAbi";
+import { ethers } from "ethers";
 import { useRecoilCallback, useRecoilState } from "recoil";
+import { ProviderState } from "../web3";
 import { ContractDataListState, ContractTagState } from "./atoms";
 import { ToolDataSelector } from "./selector";
 import { ContractData } from "./types";
@@ -6,11 +9,20 @@ import { ContractData } from "./types";
 export const useLoadContract = () => {
   const loadContract = useRecoilCallback(
     ({ set, snapshot }) =>
-      (data: ContractData) => {
+      async (data: ContractData) => {
+        const providerLoadable = snapshot.getLoadable(ProviderState);
         const dataListLoadable = snapshot.getLoadable(ContractDataListState);
+        const provider = providerLoadable.getValue();
+
+        if (!data.abi && !provider) return;
+
+        const abi =
+          data.abi ||
+          (await loadAbi(provider as ethers.providers.Provider, data.address));
+        console.log(abi);
         set(ContractDataListState, {
           ...dataListLoadable.getValue(),
-          [data.tag || ""]: data,
+          [data.tag || ""]: { ...data, abi },
         });
         set(ContractTagState, data.tag);
       },
