@@ -48,7 +48,7 @@ export const FunctionPanel: React.FC<{
           to: contract.address,
           data: calldata,
         });
-        setResult(ethers.utils.hexStripZeros(result));
+        setResult(ethers.utils.hexStripZeros(result || "0x"));
       } else {
         const result = await contract[name](...fixedArgs, {
           value: ethers.utils.parseEther(payValue || "0"),

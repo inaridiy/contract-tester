@@ -1,11 +1,21 @@
 import { useContracts } from "@/hooks/useContracts";
 import { ContractData } from "@/state/contract/types";
-import { useEffect } from "react";
+import clsx from "clsx";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 export const ContractInput = () => {
   const { register, handleSubmit, setValue } = useForm<ContractData>();
+  const [loading, setIsLoading] = useState(false);
   const { loadContract, contractData } = useContracts();
+
+  const callLoadContract = useCallback(
+    (data: ContractData) => {
+      setIsLoading(true);
+      loadContract(data).finally(() => setIsLoading(false));
+    },
+    [loadContract]
+  );
 
   useEffect(() => {
     setValue("tag", contractData?.tag || "");
@@ -17,7 +27,7 @@ export const ContractInput = () => {
   return (
     <form
       className="flex w-full flex-col gap-2"
-      onSubmit={handleSubmit(loadContract)}
+      onSubmit={handleSubmit(callLoadContract)}
     >
       <input
         className="input text-lg shadow-lg"
@@ -47,7 +57,11 @@ export const ContractInput = () => {
           />
         </label>
       </div>
-      <button type="submit" className="btn">
+      <button
+        type="submit"
+        disabled={loading}
+        className={clsx("btn", loading && "loading")}
+      >
         Load
       </button>
     </form>
