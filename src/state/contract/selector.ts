@@ -16,7 +16,7 @@ export const ContractSelector = selector({
     const data = tag && contractDataList[tag];
     const contract =
       data &&
-      new ethers.Contract(data.address, data.abi, provider?.getSigner());
+      new ethers.Contract(data.address, data.abi || [], provider?.getSigner());
 
     return contract;
   },
