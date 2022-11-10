@@ -14,7 +14,7 @@ const SideDrawer: React.FC<{
   return (
     <Drawer open={open} onClose={onClose}>
       <div className="flex flex-col gap-2">
-        {false || (
+        {Boolean(provider) || (
           <div className="w-full border-b-2 p-2">
             <button className="btn w-full" onClick={connectWallet}>
               ConnectWallet
