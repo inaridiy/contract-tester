@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   ContractInput,
   EncodePanel,
@@ -8,9 +9,15 @@ import { ContractsTab } from "./components/ContractsTab";
 import { EthersPlayground } from "./components/EthersPlayground";
 import { Footer } from "./components/Footer";
 import { useContracts } from "./hooks/useContracts";
+import { useWeb3 } from "./hooks/useWeb3";
 
 function App() {
+  const { connectWallet } = useWeb3();
   const { contract } = useContracts();
+
+  useEffect(() => {
+    void connectWallet();
+  }, []);
 
   return (
     <div className="bg-base-200 relative flex min-h-screen flex-col items-center">

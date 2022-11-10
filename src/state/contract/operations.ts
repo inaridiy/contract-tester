@@ -2,7 +2,11 @@ import { loadAbi } from "@/utils/loadAbi";
 import { ethers } from "ethers";
 import { useRecoilCallback, useRecoilState } from "recoil";
 import { ProviderState } from "../web3";
-import { ContractDataListState, ContractTagState } from "./atoms";
+import {
+  ContractDataListState,
+  ContractTagState,
+  ContractToolDataStates,
+} from "./atoms";
 import { ToolDataSelector } from "./selector";
 import { ContractData } from "./types";
 
@@ -57,4 +61,66 @@ export const useToolData = () => {
   const setByteCode = (byteCode: string) =>
     setToolData({ ...toolData, byteCode });
   return { toolData, setToolData, setScript, setByteCode };
+};
+
+export const useSaveSpace = () => {
+  const getSpaceData = useRecoilCallback(({ snapshot }) => () => {
+    const dataListLoadable = snapshot.getLoadable(ContractDataListState);
+    const dataList = dataListLoadable.getValue();
+
+    const toolDataList = Object.keys(dataList).reduce((result, tag) => {
+      result[tag] = snapshot
+        .getLoadable(ContractToolDataStates(tag))
+        .getValue();
+      return result;
+    }, {} as Record<string, { byteCode: string; script: string }>);
+
+    return {
+      contractDataList: dataList,
+      contractToolDataList: toolDataList,
+    };
+  });
+  const saveSpace = () => {
+    const spaceData = getSpaceData();
+    const blob = new Blob([JSON.stringify(spaceData)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "space.json");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  return { getSpaceData, saveSpace };
+};
+
+export const useLoadSpace = () => {
+  const loadSpace = useRecoilCallback(
+    ({ set }) =>
+      (
+        spaceData: ReturnType<ReturnType<typeof useSaveSpace>["getSpaceData"]>
+      ) => {
+        set(ContractDataListState, spaceData.contractDataList);
+        Object.keys(spaceData.contractToolDataList).forEach((tag) => {
+          set(ContractToolDataStates(tag), spaceData.contractToolDataList[tag]);
+        });
+      },
+    []
+  );
+
+  const loadSpaceFromFile = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const spaceData = JSON.parse(reader.result as string) as ReturnType<
+        ReturnType<typeof useSaveSpace>["getSpaceData"]
+      >;
+      loadSpace(spaceData);
+    };
+    reader.readAsText(file);
+  };
+
+  return { loadSpace, loadSpaceFromFile };
 };
