@@ -24,7 +24,10 @@ const ShareLinkModal: React.FC<ModalProps & { sharedId: string }> = ({
         <button className="btn btn-sm flex-1" onClick={copyUrl}>
           Copy
         </button>
-        <button className="btn btn-sm btn-outline btn-error flex-1">
+        <button
+          className="btn btn-sm btn-outline btn-error flex-1"
+          onClick={props.onClose}
+        >
           Close
         </button>
       </div>

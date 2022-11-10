@@ -1,7 +1,7 @@
 import { db } from "@/libs/firebase";
 import { loadAbi } from "@/utils/loadAbi";
 import { ethers } from "ethers";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc } from "firebase/firestore";
 import { useRecoilCallback, useRecoilState } from "recoil";
 import { ProviderState } from "../web3";
 import {
@@ -135,4 +135,16 @@ export const useShareSpace = () => {
     return id;
   };
   return { shareSpace };
+};
+
+export const useLoadSpaceFromShare = () => {
+  const { loadSpace } = useLoadSpace();
+  const loadSpaceFromShare = async (id: string) => {
+    const snapshot = await getDoc(doc(db, "ctester", id));
+    const spaceData = snapshot.data() as ReturnType<
+      ReturnType<typeof useSaveSpace>["getSpaceData"]
+    >;
+    loadSpace(spaceData);
+  };
+  return { loadSpaceFromShare };
 };

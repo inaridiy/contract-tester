@@ -1,6 +1,7 @@
 import {
   useLoadContract,
   useLoadSpace,
+  useLoadSpaceFromShare,
   useRemoveContract,
   useSaveSpace,
   useShareSpace,
@@ -22,6 +23,7 @@ export const useContracts = () => {
   const { saveSpace } = useSaveSpace();
   const { loadSpaceFromFile } = useLoadSpace();
   const { shareSpace } = useShareSpace();
+  const { loadSpaceFromShare } = useLoadSpaceFromShare();
 
   return {
     loadContract,
@@ -34,5 +36,6 @@ export const useContracts = () => {
     saveSpace,
     loadSpaceFromFile,
     shareSpace,
+    loadSpaceFromShare,
   };
 };

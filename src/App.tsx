@@ -13,10 +13,13 @@ import { useWeb3 } from "./hooks/useWeb3";
 
 function App() {
   const { connectWallet } = useWeb3();
-  const { contract } = useContracts();
+  const { contract, loadSpaceFromShare } = useContracts();
 
   useEffect(() => {
     void connectWallet();
+    const searchParams = new URLSearchParams(location.search);
+    const sharedId = searchParams.get("id");
+    sharedId && void loadSpaceFromShare(sharedId);
   }, []);
 
   return (
