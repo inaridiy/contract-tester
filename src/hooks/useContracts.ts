@@ -3,6 +3,7 @@ import {
   useLoadSpace,
   useRemoveContract,
   useSaveSpace,
+  useShareSpace,
 } from "@/state/contract";
 import {
   ContractDataListState,
@@ -20,6 +21,7 @@ export const useContracts = () => {
   const contractData = contractTag ? contractDataList[contractTag] : null;
   const { saveSpace } = useSaveSpace();
   const { loadSpaceFromFile } = useLoadSpace();
+  const { shareSpace } = useShareSpace();
 
   return {
     loadContract,
@@ -31,5 +33,6 @@ export const useContracts = () => {
     contractData,
     saveSpace,
     loadSpaceFromFile,
+    shareSpace,
   };
 };

@@ -1,5 +1,7 @@
+import { db } from "@/libs/firebase";
 import { loadAbi } from "@/utils/loadAbi";
 import { ethers } from "ethers";
+import { addDoc, collection } from "firebase/firestore";
 import { useRecoilCallback, useRecoilState } from "recoil";
 import { ProviderState } from "../web3";
 import {
@@ -123,4 +125,14 @@ export const useLoadSpace = () => {
   };
 
   return { loadSpace, loadSpaceFromFile };
+};
+
+export const useShareSpace = () => {
+  const { getSpaceData } = useSaveSpace();
+  const shareSpace = async () => {
+    const spaceData = getSpaceData();
+    const { id } = await addDoc(collection(db, "ctester"), spaceData);
+    return id;
+  };
+  return { shareSpace };
 };
