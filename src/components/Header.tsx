@@ -13,7 +13,7 @@ const SideDrawer: React.FC<{
 
   return (
     <Drawer open={open} onClose={onClose}>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col">
         {Boolean(provider) || (
           <div className="w-full border-b-2 p-2">
             <button className="btn w-full" onClick={connectWallet}>
@@ -21,13 +21,14 @@ const SideDrawer: React.FC<{
             </button>
           </div>
         )}
+
         <button
-          className="btn btn-ghost normal-case"
+          className="btn btn-ghost justify-start normal-case"
           onClick={() => console.log(saveSpace())}
         >
           Save as JSON
         </button>
-        <button className="btn btn-ghost relative normal-case">
+        <button className="btn btn-ghost relative justify-start normal-case">
           Load from JSON
           <input
             type="file"
@@ -38,6 +39,9 @@ const SideDrawer: React.FC<{
               file && loadSpaceFromFile(file);
             }}
           />
+        </button>
+        <button className="btn btn-ghost justify-start normal-case">
+          Share This Space
         </button>
       </div>
     </Drawer>
