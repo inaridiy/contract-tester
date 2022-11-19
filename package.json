@@ -3,11 +3,11 @@
   "private": true,
   "license": "MIT",
   "version": "0.0.0",
-  "type": "module",
   "scripts": {
     "dev": "next",
     "build": "next build",
     "preview": "next start",
+    "export": "next export",
     "fix": "npm-run-all -p fix:*",
     "fix:eslint": "next lint --fix",
     "fix:prettier": "prettier --write .",
