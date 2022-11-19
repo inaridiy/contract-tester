@@ -1,15 +1,16 @@
 import { useEffect } from "react";
 import {
   ContractInput,
+  ContractsTab,
   EncodePanel,
+  EthersPlayground,
+  Footer,
   FunctionPanel,
   Header,
-} from "./components";
-import { ContractsTab } from "./components/ContractsTab";
-import { EthersPlayground } from "./components/EthersPlayground";
-import { Footer } from "./components/Footer";
-import { useContracts } from "./hooks/useContracts";
-import { useWeb3 } from "./hooks/useWeb3";
+} from "../components";
+
+import { useContracts } from "../hooks/useContracts";
+import { useWeb3 } from "../hooks/useWeb3";
 
 function App() {
   const { connectWallet } = useWeb3();
