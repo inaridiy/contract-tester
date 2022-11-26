@@ -1,4 +1,5 @@
 import {
+  useClearContract,
   useLoadContract,
   useLoadSpace,
   useLoadSpaceFromShare,
@@ -16,6 +17,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 export const useContracts = () => {
   const { loadContract } = useLoadContract();
   const { removeContract } = useRemoveContract();
+  const { clearContract } = useClearContract();
   const contractDataList = useRecoilValue(ContractDataListState);
   const [contractTag, setContractTag] = useRecoilState(ContractTagState);
   const contract = useRecoilValue(ContractSelector);
@@ -36,6 +38,7 @@ export const useContracts = () => {
     saveSpace,
     loadSpaceFromFile,
     shareSpace,
+    clearContract,
     loadSpaceFromShare,
   };
 };

@@ -57,6 +57,17 @@ export const useRemoveContract = () => {
   return { removeContract };
 };
 
+export const useClearContract = () => {
+  const clearContract = useRecoilCallback(
+    ({ set }) =>
+      () => {
+        set(ContractTagState, null);
+      },
+    []
+  );
+  return { clearContract };
+};
+
 export const useToolData = () => {
   const [toolData, setToolData] = useRecoilState(ToolDataSelector);
   const setScript = (script: string) => setToolData({ ...toolData, script });

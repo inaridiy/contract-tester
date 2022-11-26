@@ -1,10 +1,15 @@
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { useContracts } from "../hooks/useContracts";
 
 export const ContractsTab = () => {
-  const { contractDataList, contractTag, setContractTag, removeContract } =
-    useContracts();
+  const {
+    contractDataList,
+    contractTag,
+    setContractTag,
+    removeContract,
+    clearContract,
+  } = useContracts();
 
   return (
     <div className="tabs tabs-boxed mx-auto">
@@ -32,6 +37,9 @@ export const ContractsTab = () => {
             </div>
           )
         )}
+      <button className="btn btn-circle btn-ghost ml-2" onClick={clearContract}>
+        <PlusIcon className="w-8" />
+      </button>
     </div>
   );
 };
