@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.7.4",
-    "@heroicons/react": "^2.0.11",
+    "@heroicons/react": "^2.0.13",
     "@monaco-editor/react": "^4.4.6",
     "@shazow/whatsabi": "^0.2.0",
     "@walletconnect/web3-provider": "^1.8.0",

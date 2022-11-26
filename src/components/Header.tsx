@@ -1,7 +1,14 @@
 import { useContracts } from "@/hooks/useContracts";
 import { useModal } from "@/hooks/useModal";
 import { useWeb3 } from "@/hooks/useWeb3";
-import { Bars3Icon } from "@heroicons/react/24/outline";
+import {
+  ArrowDownTrayIcon,
+  ArrowUpTrayIcon,
+  BanknotesIcon,
+  Bars3Icon,
+  ShareIcon,
+} from "@heroicons/react/24/outline";
+import { ethers } from "ethers";
 import { useState } from "react";
 import { Drawer } from "./Drawer";
 import { Modal, ModalProps } from "./Modal";
@@ -35,6 +42,51 @@ const ShareLinkModal: React.FC<ModalProps & { sharedId: string }> = ({
   );
 };
 
+const DonateModal: React.FC<ModalProps> = (props) => {
+  const { provider } = useWeb3();
+  const [donateValue, setDonateValue] = useState("");
+  const isValid = donateValue !== "" && !isNaN(Number(donateValue));
+  const donate = () => {
+    if (!provider) return;
+    provider.getSigner().sendTransaction({
+      to: "0x4aCc9c9eaFF1cf0e599dCb7a7164Cf2328224ca2",
+      value: ethers.utils.parseEther(donateValue),
+    });
+  };
+
+  return (
+    <Modal className="flex flex-col gap-2 p-2" {...props}>
+      <h2 className="text-3xl font-bold">Donate to inaridiy</h2>
+      <div className="form-control">
+        <label className="label">
+          <span className="label-text">Enter amount</span>
+        </label>
+        <label className="input-group">
+          <input
+            type="text"
+            placeholder="0.01"
+            className="input input-bordered w-full"
+            value={donateValue}
+            onChange={(e) => setDonateValue(e.target.value)}
+          />
+          <span>ETH</span>
+        </label>
+      </div>
+      <div className="flex gap-2">
+        <button disabled={!isValid} onClick={donate} className="btn flex-1">
+          Donate
+        </button>
+        <button
+          className="btn btn-outline btn-error flex-1"
+          onClick={props.onClose}
+        >
+          Close
+        </button>
+      </div>
+    </Modal>
+  );
+};
+
 const SideDrawer: React.FC<{
   open: boolean;
   onClose: () => void;
@@ -43,10 +95,12 @@ const SideDrawer: React.FC<{
   const { saveSpace, loadSpaceFromFile, shareSpace } = useContracts();
   const [sharedId, setSharedId] = useState("");
   const { register, open: openModal } = useModal();
+  const { register: donateRegister, open: openDonateModal } = useModal();
 
   return (
     <>
       <ShareLinkModal sharedId={sharedId} {...register} />
+      <DonateModal {...donateRegister} />
       <Drawer open={open} onClose={onClose}>
         <div className="flex flex-col">
           {Boolean(provider) || (
@@ -58,12 +112,14 @@ const SideDrawer: React.FC<{
           )}
 
           <button
-            className="btn btn-ghost justify-start normal-case"
+            className="btn btn-ghost gap-2 px-2 justify-start normal-case"
             onClick={() => console.log(saveSpace())}
           >
+            <ArrowDownTrayIcon className="w-6" />
             Save as JSON
           </button>
-          <button className="btn btn-ghost relative justify-start normal-case">
+          <button className="btn btn-ghost gap-2 px-2 relative justify-start normal-case">
+            <ArrowUpTrayIcon className="w-6" />
             Load from JSON
             <input
               type="file"
@@ -76,12 +132,20 @@ const SideDrawer: React.FC<{
             />
           </button>
           <button
-            className="btn btn-ghost justify-start normal-case"
+            className="btn btn-ghost gap-2 px-2 justify-start normal-case"
             onClick={() =>
               shareSpace().then(setSharedId).then(onClose).then(openModal)
             }
           >
+            <ShareIcon className="w-6" />
             Share This Space
+          </button>
+          <button
+            className="btn btn-ghost gap-2 px-2 justify-start normal-case"
+            onClick={openDonateModal}
+          >
+            <BanknotesIcon className="w-6" />
+            Donate
           </button>
         </div>
       </Drawer>
