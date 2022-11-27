@@ -33,8 +33,8 @@ const providerOptions = {
 export const useConnectWallet = () => {
   const connectWallet = useRecoilCallback(({ set }) => async () => {
     const web3Modal = new Web3Modal({
-      network: "mainnet",
       providerOptions,
+      cacheProvider: true,
     });
     console.log("YEASH");
 
