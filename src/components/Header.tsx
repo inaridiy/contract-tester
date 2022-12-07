@@ -49,7 +49,7 @@ const DonateModal: React.FC<ModalProps> = (props) => {
   const donate = () => {
     if (!provider) return;
     provider.getSigner().sendTransaction({
-      to: "0x4aCc9c9eaFF1cf0e599dCb7a7164Cf2328224ca2",
+      to: "0x5b8172fd540A4A4443508F96F005cB970da5f40d",
       value: ethers.utils.parseEther(donateValue),
     });
   };
