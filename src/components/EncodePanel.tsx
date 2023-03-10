@@ -40,14 +40,11 @@ export const EncodePanel = () => {
         const sigHash = contract.interface.getSighash(func);
         return [sigHash, func] as const;
       });
-    console.log(
-      sigHashesEntries && Object.fromEntries(sigHashesEntries)[newSigHash]
-    );
 
     const func =
       sigHashesEntries && Object.fromEntries(sigHashesEntries)[newSigHash];
 
-    func && setFunc(func);
+    func && (setFunc(func), setTarget("FunctionData"));
   };
 
   const encode = useCallback(() => {
@@ -139,6 +136,7 @@ export const EncodePanel = () => {
       </div>
       <select
         className="select bg-base-200 select-bordered w-full"
+        value={target}
         onChange={(e) => setTarget(e.target.value)}
       >
         <option>None</option>
