@@ -29,6 +29,27 @@ export const EncodePanel = () => {
     [contract]
   );
 
+  const handleTargetChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setByteCode(e.target.value);
+    const oldSigHash = toolData.byteCode.slice(0, 10);
+    const newSigHash = e.target.value.slice(0, 10);
+    if (oldSigHash === newSigHash) return;
+    const sigHashesEntries =
+      contract &&
+      Object.entries(contract.interface.functions).map(([, func]) => {
+        const sigHash = contract.interface.getSighash(func);
+        return [sigHash, func] as const;
+      });
+    console.log(
+      sigHashesEntries && Object.fromEntries(sigHashesEntries)[newSigHash]
+    );
+
+    const func =
+      sigHashesEntries && Object.fromEntries(sigHashesEntries)[newSigHash];
+
+    func && setFunc(func);
+  };
+
   const encode = useCallback(() => {
     if (!func || !contract) return;
     try {
@@ -96,6 +117,7 @@ export const EncodePanel = () => {
       <div className="flex">
         <select
           className="select bg-base-200 select-bordered w-full"
+          value={func?.format()}
           onChange={handleChange}
         >
           <option>None</option>
@@ -135,7 +157,7 @@ export const EncodePanel = () => {
         className="input bg-base-200 h-56 resize-none py-2 text-lg"
         placeholder="Type byte Data"
         value={toolData.byteCode}
-        onChange={(e) => setByteCode(e.target.value)}
+        onChange={handleTargetChange}
       />
       {result && (
         <div className="text-lg font-bold">

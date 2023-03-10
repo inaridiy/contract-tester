@@ -44,6 +44,10 @@ function App() {
               />
             ))}
       </div>
+      <script
+        className="moons_apps_ad_banner moons_apps_ad_auto"
+        src="https://apps.cubes.life/ad/js/banner.js"
+      ></script>
       <Footer />
     </div>
   );
