@@ -1,3 +1,3 @@
 const WindowContainer = () => {
-  return <div></div>;
+  return <div className="flex w-1 items-center"></div>;
 };

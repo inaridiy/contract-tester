@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "lint:fix": "next lint --fix && prettier --write ."
+    "lint:fix": "next lint --fix && prettier --write .",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.1.1",
@@ -64,6 +65,7 @@
   },
   "devDependencies": {
     "eslint-plugin-tailwindcss": "^3.13.0",
-    "prettier": "^3.0.0"
+    "prettier": "^3.0.0",
+    "husky": "^8.0.0"
   }
 }
