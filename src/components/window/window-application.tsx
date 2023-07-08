@@ -6,14 +6,16 @@ import { cn } from "@/lib/utils";
 
 import { Card, CardTitle } from "../ui/card";
 
+import { ResizeHandler } from "./resize-handler";
 import { useWindowStore } from "./window-store";
 
 export interface WindowApplicationProps {
   windowKey: string;
   name?: string;
-  zIndex?: number;
   className?: string;
   children?: React.ReactNode;
+  minWidth?: number;
+  minHeight?: number;
 }
 
 export const WindowApplication: React.FC<WindowApplicationProps> = ({
@@ -21,6 +23,8 @@ export const WindowApplication: React.FC<WindowApplicationProps> = ({
   name,
   className,
   children,
+  minWidth = 100,
+  minHeight = 100,
 }) => {
   const container = useWindowStore((state) => state.container);
   const position = useWindowStore((state) => state.windows[key]);
@@ -70,6 +74,21 @@ export const WindowApplication: React.FC<WindowApplicationProps> = ({
     [key, position, container, updateWindow, toTopWindow],
   );
 
+  const handleResize = useCallback(
+    (diff: { width: number; height: number; top: number; left: number }) => {
+      if (!position) return;
+      const { width, height, top, left } = position;
+      updateWindow(key, {
+        ...position,
+        width: Math.max(minWidth, width + diff.width),
+        height: Math.max(minHeight, height + diff.height),
+        top: Math.max(0, top + Math.min(diff.top, height - minHeight)),
+        left: Math.max(0, left + Math.min(diff.left, width - minWidth)),
+      });
+    },
+    [key, position, updateWindow, minWidth, minHeight],
+  );
+
   useEffect(() => {
     updateWindow(key, { left: 0, top: 0, width: 400, height: 300, zIndex: 0 });
     return () => closeWindow(key);
@@ -79,8 +98,9 @@ export const WindowApplication: React.FC<WindowApplicationProps> = ({
     <Card
       style={style}
       className={cn("absolute overflow-hidden flex flex-col", className)}
-      onFocus={() => toTopWindow(key)}
+      onClick={() => toTopWindow(key)}
     >
+      <ResizeHandler onResize={handleResize} />
       <div className="flex h-12 w-full cursor-grab p-4" onMouseDown={handleMouseDown}>
         <CardTitle className="select-none">{name}</CardTitle>
       </div>
