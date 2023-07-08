@@ -41,6 +41,7 @@ export const WindowApplication: React.FC<WindowApplicationProps> = ({
             width: position.width,
             height: position.height,
             zIndex: position.zIndex,
+            display: position.hidden ? "none" : "block",
           }
         : {
             display: "none",
@@ -90,7 +91,7 @@ export const WindowApplication: React.FC<WindowApplicationProps> = ({
   );
 
   useEffect(() => {
-    updateWindow(key, { left: 0, top: 0, width: 400, height: 300, zIndex: 0 });
+    updateWindow(key, { left: 0, top: 0, width: 400, height: 300, zIndex: 0, hidden: false });
     return () => closeWindow(key);
   }, [key, closeWindow, updateWindow]);
 

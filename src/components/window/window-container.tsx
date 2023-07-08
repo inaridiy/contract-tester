@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 
 import { cn } from "@/lib/utils";
 
-import { listenDivPosition } from "./utils";
+import { listenDivPosition, getDivPosition } from "./utils";
 import { useWindowStore } from "./window-store";
 
 export interface WindowContainerProps {
@@ -15,15 +15,18 @@ export interface WindowContainerProps {
 export const WindowContainer: React.FC<WindowContainerProps> = ({ className, children }) => {
   const ref = useRef<HTMLDivElement>(null);
   const setContainer = useWindowStore((state) => state.setContainer);
+  const resizeContainer = useWindowStore((state) => state.resizeContainer);
 
   useEffect(() => {
     if (!ref.current) return;
+    const position = getDivPosition(ref.current);
+    setContainer(position);
     const clean = listenDivPosition(ref.current, (position) => {
-      setContainer(position);
+      resizeContainer(position);
     });
 
     return () => clean();
-  }, [ref, setContainer]);
+  }, [ref, setContainer, resizeContainer]);
 
   return (
     <div className={cn("relative overflow-hidden", className)} ref={ref}>

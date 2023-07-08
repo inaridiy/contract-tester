@@ -15,12 +15,14 @@ export interface WindowStoreState {
       top: number;
       left: number;
       zIndex: number;
+      hidden: boolean;
     };
   };
 }
 
 export interface WindowStoreActions {
   setContainer: (container: WindowStoreState["container"]) => void;
+  resizeContainer: (container: WindowStoreState["container"]) => void;
   toTopWindow: (id: string) => void;
   updateWindow: (id: string, window: WindowStoreState["windows"][string]) => void;
   closeWindow: (id: string) => void;
@@ -30,6 +32,27 @@ export const useWindowStore = create<WindowStoreState & WindowStoreActions>((set
   container: null,
   windows: {},
   setContainer: (container) => set((state) => ({ ...state, container })),
+  resizeContainer: (container) =>
+    set((state) => {
+      if (!container) return { ...state };
+      const { width, height } = container;
+      const updatedWindows = { ...state.windows };
+      for (const [id, window] of Object.entries(updatedWindows)) {
+        if (window.left + window.width > width) {
+          window.left = width - window.width;
+        }
+        if (window.top + window.height > height) {
+          window.top = height - window.height;
+        }
+        updatedWindows[id] = window;
+      }
+
+      return {
+        ...state,
+        container,
+        windows: updatedWindows,
+      };
+    }),
   toTopWindow: (id) =>
     set((state) => {
       const window = state.windows[id];
