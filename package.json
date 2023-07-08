@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "lint:fix": "next lint --fix && prettier --write .",
+    "lint:fix": "next lint --fix && prettier --write ./src",
     "prepare": "husky install"
   },
   "dependencies": {
@@ -64,8 +64,9 @@
     "zustand": "^4.3.9"
   },
   "devDependencies": {
+    "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-tailwindcss": "^3.13.0",
-    "prettier": "^3.0.0",
-    "husky": "^8.0.0"
+    "husky": "^8.0.0",
+    "prettier": "^3.0.0"
   }
 }

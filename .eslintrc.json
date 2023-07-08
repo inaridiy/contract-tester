@@ -1,4 +1,24 @@
 {
-  "extends": ["next/core-web-vitals", "plugin:tailwindcss/recommended"],
-  "plugins": ["tailwindcss"]
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript",
+    "plugin:tailwindcss/recommended"
+  ],
+  "plugins": ["import", "tailwindcss"],
+  "rules": {
+    "tailwindcss/no-custom-classname": "off",
+    "import/order": [
+      "error",
+      {
+        "groups": ["builtin", "external", "internal", "parent", "sibling", "index", "object"],
+        "newlines-between": "always",
+        "alphabetize": { "order": "asc", "caseInsensitive": true }
+      }
+    ],
+    "import/default": "off",
+    "import/no-named-as-default-member": "off",
+    "import/no-named-as-default": "off"
+  }
 }
