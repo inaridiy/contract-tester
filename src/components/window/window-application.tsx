@@ -1,10 +1,11 @@
 "use client";
 
+import { XIcon, MaximizeIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo } from "react";
 
+import { Button } from "@/components/ui/button";
+import { Card, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-
-import { Card, CardTitle } from "../ui/card";
 
 import { ResizeHandler } from "./resize-handler";
 import { useWindowStore } from "./window-store";
@@ -90,6 +91,10 @@ export const WindowApplication: React.FC<WindowApplicationProps> = ({
     [key, position, updateWindow, minWidth, minHeight],
   );
 
+  const handleClose = useCallback(() => {
+    closeWindow(key);
+  }, [key, closeWindow]);
+
   useEffect(() => {
     updateWindow(key, { left: 0, top: 0, width: 400, height: 300, zIndex: 0, hidden: false });
     return () => closeWindow(key);
@@ -102,10 +107,23 @@ export const WindowApplication: React.FC<WindowApplicationProps> = ({
       onClick={() => toTopWindow(key)}
     >
       <ResizeHandler onResize={handleResize} />
-      <div className="flex h-12 w-full cursor-grab p-4" onMouseDown={handleMouseDown}>
+      <div
+        className="flex h-12 w-full cursor-grab items-center gap-2 px-4"
+        onMouseDown={handleMouseDown}
+      >
         <CardTitle className="select-none">{name}</CardTitle>
+        <div className="flex-1" />
+
+        <Button
+          variant="outline"
+          size="icon"
+          className="hover:text-destructive"
+          onClick={handleClose}
+        >
+          <XIcon className="h-4 w-4" />
+        </Button>
       </div>
-      <div className="max-w-full flex-1 overflow-y-auto overflow-x-hidden">{children}</div>
+      <div className="h-full max-w-full overflow-y-auto overflow-x-hidden">{children}</div>
     </Card>
   );
 };
