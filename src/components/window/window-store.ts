@@ -7,7 +7,20 @@ export interface WindowStoreState {
     top: number;
     left: number;
   } | null;
-
+  grid: {
+    rows: number;
+    cols: number;
+    items: string[][]; // x, y
+  } | null;
+  resizeGridBorder: {
+    grid: {
+      rows: number;
+      cols: number;
+      items: string[][]; // x, y
+    };
+    gridX: number;
+    gridY: number;
+  } | null;
   windows: {
     [key: string]: {
       width: number;
@@ -23,6 +36,7 @@ export interface WindowStoreState {
 export interface WindowStoreActions {
   setContainer: (container: WindowStoreState["container"]) => void;
   resizeContainer: (container: WindowStoreState["container"]) => void;
+  setResizeGridBorder: (grid: WindowStoreState["resizeGridBorder"]) => void;
   toTopWindow: (id: string) => void;
   updateWindow: (id: string, window: WindowStoreState["windows"][string]) => void;
   closeWindow: (id: string) => void;
@@ -30,8 +44,11 @@ export interface WindowStoreActions {
 
 export const useWindowStore = create<WindowStoreState & WindowStoreActions>((set) => ({
   container: null,
+  resizeGridBorder: null,
+  grid: null,
   windows: {},
   setContainer: (container) => set((state) => ({ ...state, container })),
+  setResizeGridBorder: (grid) => set((state) => ({ ...state, resizeGridBorder: grid })),
   resizeContainer: (container) =>
     set((state) => {
       if (!container) return { ...state };

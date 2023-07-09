@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 
 import { cn } from "@/lib/utils";
 
+import { WindowResizeBorder } from "./resize-border";
 import { listenDivPosition, getDivPosition } from "./utils";
 import { useWindowStore } from "./window-store";
 
@@ -16,6 +17,7 @@ export const WindowContainer: React.FC<WindowContainerProps> = ({ className, chi
   const ref = useRef<HTMLDivElement>(null);
   const setContainer = useWindowStore((state) => state.setContainer);
   const resizeContainer = useWindowStore((state) => state.resizeContainer);
+  const resizeGridBorder = useWindowStore((state) => state.resizeGridBorder);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -30,6 +32,7 @@ export const WindowContainer: React.FC<WindowContainerProps> = ({ className, chi
 
   return (
     <div className={cn("relative overflow-hidden", className)} ref={ref}>
+      {resizeGridBorder && <WindowResizeBorder {...resizeGridBorder} />}
       {children}
     </div>
   );
