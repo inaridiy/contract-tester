@@ -8,7 +8,8 @@ import { Card, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 import { ResizeHandler } from "./resize-handler";
-import { useWindowStore } from "./window-store";
+import { calculateGrid } from "./utils";
+import { WindowStoreState, useWindowStore } from "./window-store";
 
 export interface WindowApplicationProps {
   windowKey: string;
@@ -28,6 +29,7 @@ export const WindowApplication: React.FC<WindowApplicationProps> = memo(
     const toTopWindow = useWindowStore((state) => state.toTopWindow);
     const updateWindow = useWindowStore((state) => state.updateWindow);
     const closeWindow = useWindowStore((state) => state.closeWindow);
+    const setGrid = useWindowStore((state) => state.setGrid);
     const setResizeGridBorder = useWindowStore((state) => state.setResizeGridBorder);
 
     const style = useMemo(
@@ -54,6 +56,8 @@ export const WindowApplication: React.FC<WindowApplicationProps> = memo(
         e.stopPropagation();
         const { clientX, clientY } = e;
         const { left, top } = position;
+        let resizeGridBorder: WindowStoreState["resizeGridBorder"] = null;
+
         toTopWindow(key);
 
         const handleMouseMove = (e: MouseEvent) => {
@@ -69,19 +73,23 @@ export const WindowApplication: React.FC<WindowApplicationProps> = memo(
           updateWindow(key, { ...position, top: newTop, left: newLeft });
           toTopWindow(key);
 
-          const isXEdge = newLeft === 0 ? -1 : newLeft === container.width - position.width ? 1 : 0;
-          const isYEdge = newTop === 0 ? -1 : newTop === container.height - position.height ? 1 : 0;
-          if (isXEdge === 1 && isYEdge === 0) {
-            setResizeGridBorder({
-              grid: { rows: 1, cols: 2, items: [] },
-              ...{ gridX: 1, gridY: 0 },
-            });
-          } else if (isXEdge === -1 && isYEdge === 0) {
-            setResizeGridBorder({
-              grid: { rows: 1, cols: 2, items: [] },
-              ...{ gridX: 0, gridY: 0 },
-            });
+          const edgeX = newLeft === 0 ? 0 : newLeft === container.width - position.width ? 1 : null;
+          const edgeY = newTop === 0 ? 0 : newTop === container.height - position.height ? 1 : null;
+
+          if ((grid?.mode === "2x1" || !grid) && edgeX !== null && edgeY === null) {
+            resizeGridBorder = {
+              grid: { mode: "2x1", items: grid?.items || [[], []] },
+              ...{ gridX: edgeX, gridY: 0 },
+            };
+            setResizeGridBorder(resizeGridBorder);
+          } else if ((grid?.mode === "2x2" || !grid) && edgeX !== null && edgeY !== null) {
+            resizeGridBorder = {
+              grid: { mode: "2x2", items: grid?.items || [[], []] },
+              ...{ gridX: edgeX, gridY: edgeY },
+            };
+            setResizeGridBorder(resizeGridBorder);
           } else {
+            resizeGridBorder = null;
             setResizeGridBorder(null);
           }
         };
@@ -89,11 +97,27 @@ export const WindowApplication: React.FC<WindowApplicationProps> = memo(
         const handleMouseUp = () => {
           window.removeEventListener("mousemove", handleMouseMove);
           window.removeEventListener("mouseup", handleMouseUp);
+          if (resizeGridBorder) {
+            const { grid, gridX, gridY } = resizeGridBorder;
+            const gridPosition = calculateGrid(
+              container,
+              useWindowStore.getState().windows, //ちょっとしたパフォーマンス改善黒魔術
+              grid,
+              { x: gridX, y: gridY },
+            );
+            grid.items ??= [];
+            grid.items[gridY] ??= [];
+            grid.items[gridY][gridX] = key;
+            console.log(grid, gridX, gridY);
+            setGrid({ ...grid });
+            updateWindow(key, { ...position, ...gridPosition });
+          }
+          setResizeGridBorder(null);
         };
         window.addEventListener("mousemove", handleMouseMove);
         window.addEventListener("mouseup", handleMouseUp);
       },
-      [key, position, container, updateWindow, toTopWindow, setResizeGridBorder],
+      [key, position, container, grid, updateWindow, toTopWindow, setGrid, setResizeGridBorder],
     );
 
     const handleResize = useCallback(
