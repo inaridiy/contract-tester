@@ -50,16 +50,24 @@ export const useWindowStore = create<WindowStoreState & WindowStoreActions>((set
   setResizeGridBorder: (grid) => set((state) => ({ ...state, resizeGridBorder: grid })),
   resizeContainer: (container) =>
     set((state) => {
-      if (!container) return { ...state };
+      if (!container || !state.container) return { ...state };
       const { width, height } = container;
+      const { width: oldWidth, height: oldHeight } = state.container;
       const updatedWindows = { ...state.windows };
+
       for (const [id, window] of Object.entries(updatedWindows)) {
-        if (window.left + window.width > width) {
-          window.left = width - window.width;
+        const isInGrid = state.grid?.items.some((row) => row.includes(id));
+        if (isInGrid) {
+          const { width, height, top, left } = window;
+          window.width = (width / oldWidth) * width;
+          window.height = (height / oldHeight) * height;
+          window.top = (top / oldHeight) * height;
+          window.left = (left / oldWidth) * width;
         }
-        if (window.top + window.height > height) {
-          window.top = height - window.height;
-        }
+
+        if (window.left + window.width > width) window.left = width - window.width;
+        if (window.top + window.height > height) window.top = height - window.height;
+
         updatedWindows[id] = window;
       }
 
