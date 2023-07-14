@@ -1,5 +1,9 @@
 import { create } from "zustand";
 
+import { inRange } from "@/lib/utils";
+
+import { getGridAdjacentWindows, getMaxWindowSize } from "./utils";
+
 export interface WindowStoreState {
   container: {
     width: number;
@@ -25,6 +29,8 @@ export interface WindowStoreState {
       height: number;
       top: number;
       left: number;
+      minWidth: number;
+      minHeight: number;
       zIndex: number;
       hidden: boolean;
     };
@@ -38,6 +44,7 @@ export interface WindowStoreActions {
   setResizeGridBorder: (grid: WindowStoreState["resizeGridBorder"]) => void;
   toTopWindow: (id: string) => void;
   updateWindow: (id: string, window: WindowStoreState["windows"][string]) => void;
+  resizeWindow: (id: string, window: WindowStoreState["windows"][string]) => void;
   closeWindow: (id: string) => void;
 }
 
@@ -92,6 +99,51 @@ export const useWindowStore = create<WindowStoreState & WindowStoreActions>((set
     }),
   updateWindow: (id, window) =>
     set((state) => ({ ...state, windows: { ...state.windows, [id]: window } })),
+  resizeWindow: (id, window) =>
+    set((state) => {
+      const container = state.container;
+      const oldWindow = state.windows[id];
+      const windows = { ...state.windows };
+      const grid = state.grid;
+      if (!container) return state;
+      const adjacent = getGridAdjacentWindows(grid, windows, id);
+      const maxSize = getMaxWindowSize(container, adjacent);
+
+      if (adjacent.up) {
+        const { key, ...rest } = adjacent.up;
+        windows[key] = { ...rest, height: rest.height - (oldWindow.top - window.top) };
+      }
+      if (adjacent.down) {
+        const { key, ...rest } = adjacent.down;
+        windows[key] = {
+          ...rest,
+          top: rest.top - (oldWindow.height - window.height),
+          height: rest.height + (oldWindow.height - window.height),
+        };
+      }
+      if (adjacent.left) {
+        const { key, ...rest } = adjacent.left;
+        windows[key] = { ...rest, width: rest.width - (oldWindow.left - window.left) };
+      }
+      if (adjacent.right) {
+        const { key, ...rest } = adjacent.right;
+        windows[key] = {
+          ...rest,
+          left: rest.left - (oldWindow.width - window.width),
+          width: rest.width + (oldWindow.width - window.width),
+        };
+      }
+
+      windows[id] = {
+        ...window,
+        width: inRange(window.width, window.minWidth, maxSize?.maxWidth || Infinity),
+        height: inRange(window.height, window.minHeight, maxSize?.maxHeight || Infinity),
+        top: inRange(window.top, 0, container.height - window.height),
+        left: inRange(window.left, 0, container.width - window.width),
+      };
+
+      return { ...state, windows: { ...windows } };
+    }),
   closeWindow: (id) =>
     set(({ windows: { [id]: undefined, ...windows }, ...state }) => ({
       ...state,

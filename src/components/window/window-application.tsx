@@ -1,14 +1,14 @@
 "use client";
 
-import { XIcon, MaximizeIcon } from "lucide-react";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { XIcon } from "lucide-react";
+import { memo, useCallback, useEffect, useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 import { ResizeHandler } from "./resize-handler";
-import { calculateGrid } from "./utils";
+import { calculateGrid, isInGrid, removeGrid } from "./utils";
 import { WindowStoreState, useWindowStore } from "./window-store";
 
 export interface WindowApplicationProps {
@@ -28,6 +28,7 @@ export const WindowApplication: React.FC<WindowApplicationProps> = memo(
     const position = useWindowStore((state) => state.windows[key]);
     const toTopWindow = useWindowStore((state) => state.toTopWindow);
     const updateWindow = useWindowStore((state) => state.updateWindow);
+    const resizeWindow = useWindowStore((state) => state.resizeWindow);
     const closeWindow = useWindowStore((state) => state.closeWindow);
     const setGrid = useWindowStore((state) => state.setGrid);
     const setResizeGridBorder = useWindowStore((state) => state.setResizeGridBorder);
@@ -71,6 +72,7 @@ export const WindowApplication: React.FC<WindowApplicationProps> = memo(
             Math.min(container.width - position.width, left + x - clientX),
           );
           updateWindow(key, { ...position, top: newTop, left: newLeft });
+          // isInGrid(grid, key) && setGrid(removeGrid(grid, key));
           toTopWindow(key);
 
           const edgeX = newLeft === 0 ? 0 : newLeft === container.width - position.width ? 1 : null;
@@ -111,6 +113,7 @@ export const WindowApplication: React.FC<WindowApplicationProps> = memo(
             console.log(grid, gridX, gridY);
             setGrid({ ...grid });
             updateWindow(key, { ...position, ...gridPosition });
+            toTopWindow(key);
           }
           setResizeGridBorder(null);
         };
@@ -124,15 +127,16 @@ export const WindowApplication: React.FC<WindowApplicationProps> = memo(
       (diff: { width: number; height: number; top: number; left: number }) => {
         if (!position) return;
         const { width, height, top, left } = position;
-        updateWindow(key, {
+
+        resizeWindow(key, {
           ...position,
-          width: Math.max(minWidth, width + diff.width),
-          height: Math.max(minHeight, height + diff.height),
-          top: Math.max(0, top + Math.min(diff.top, height - minHeight)),
-          left: Math.max(0, left + Math.min(diff.left, width - minWidth)),
+          width: width + diff.width,
+          height: height + diff.height,
+          top: top + diff.top,
+          left: left + diff.left,
         });
       },
-      [key, position, updateWindow, minWidth, minHeight],
+      [key, position, resizeWindow],
     );
 
     const handleClose = useCallback(() => {
@@ -140,9 +144,14 @@ export const WindowApplication: React.FC<WindowApplicationProps> = memo(
     }, [key, closeWindow]);
 
     useEffect(() => {
-      updateWindow(key, { left: 0, top: 0, width: 400, height: 300, zIndex: 0, hidden: false });
+      updateWindow(key, {
+        ...{ left: 0, top: 0, width: 400, height: 300 },
+        ...{ minHeight, minWidth },
+        ...{ zIndex: 0, hidden: false },
+      });
+
       return () => closeWindow(key);
-    }, [key, closeWindow, updateWindow]);
+    }, [key, closeWindow, updateWindow, minHeight, minWidth]);
 
     return (
       <Card
