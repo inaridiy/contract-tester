@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 import { inRange } from "@/lib/utils";
 
-import { getGridAdjacentWindows, getGridPosition, getMaxWindowSize } from "./utils";
+import { getGridAdjacentWindows, getGridPosition, getMaxWindowSize, removeGrid } from "./utils";
 
 export interface WindowStoreState {
   container: {
@@ -104,19 +104,29 @@ export const useWindowStore = create<WindowStoreState & WindowStoreActions>((set
       const container = state.container;
       const oldWindow = state.windows[id];
       const windows = { ...state.windows };
-      const grid = state.grid;
       if (!container) return state;
-      const adjacent = getGridAdjacentWindows(grid, windows, id);
-      const maxSize = getMaxWindowSize(container, adjacent);
+
+      const grid = state.grid;
       const gridPos = getGridPosition(grid, id);
       const temp = gridPos ? { x: gridPos.x, y: gridPos.y } : { x: 0, y: 0 };
       const revTemp = gridPos ? { x: gridPos.x ? 0 : 1, y: gridPos.y ? 0 : 1 } : { x: 0, y: 0 };
 
+      const adjacent = getGridAdjacentWindows(grid, windows, id);
+      const maxSize = getMaxWindowSize(container, adjacent);
+
+      windows[id] = {
+        ...window,
+        width: inRange(window.width, window.minWidth, maxSize?.maxWidth || Infinity),
+        height: inRange(window.height, window.minHeight, maxSize?.maxHeight || Infinity),
+        top: inRange(window.top, 0, container.height - window.height),
+        left: inRange(window.left, 0, container.width - window.width),
+      };
+
       const diff = {
-        width: window.width - oldWindow.width,
-        height: window.height - oldWindow.height,
-        top: window.top - oldWindow.top,
-        left: window.left - oldWindow.left,
+        width: windows[id].width - oldWindow.width,
+        height: windows[id].height - oldWindow.height,
+        top: windows[id].top - oldWindow.top,
+        left: windows[id].left - oldWindow.left,
       };
 
       if (adjacent.up) {
@@ -159,7 +169,6 @@ export const useWindowStore = create<WindowStoreState & WindowStoreActions>((set
       }
       if (adjacent.opposite) {
         const { key, ...rest } = adjacent.opposite;
-
         windows[key] = {
           ...rest,
           left: rest.left + diff.width * revTemp.x,
@@ -168,14 +177,6 @@ export const useWindowStore = create<WindowStoreState & WindowStoreActions>((set
           height: rest.height - diff.height,
         };
       }
-
-      windows[id] = {
-        ...window,
-        width: inRange(window.width, window.minWidth, maxSize?.maxWidth || Infinity),
-        height: inRange(window.height, window.minHeight, maxSize?.maxHeight || Infinity),
-        top: inRange(window.top, 0, container.height - window.height),
-        left: inRange(window.left, 0, container.width - window.width),
-      };
 
       return { ...state, windows: { ...windows } };
     }),

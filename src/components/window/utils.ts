@@ -66,8 +66,7 @@ export const isInGrid = (grid: WindowStoreState["grid"], key: string) => {
   return grid.items.some((row) => row.includes(key));
 };
 
-export const removeGrid = (grid: WindowStoreState["grid"], key: string) => {
-  if (!grid) return null;
+export const removeGrid = (grid: NonNullable<WindowStoreState["grid"]>, key: string) => {
   const items = grid.items.map((row) => row.filter((item) => item !== key));
   return { ...grid, items };
 };
