@@ -72,7 +72,7 @@ export const removeGrid = (grid: WindowStoreState["grid"], key: string) => {
   return { ...grid, items };
 };
 
-export const gridPosition = (grid: WindowStoreState["grid"], key: string) => {
+export const getGridPosition = (grid: WindowStoreState["grid"], key: string) => {
   if (!grid || !isInGrid(grid, key)) return null;
   const y = grid.items.findIndex((row) => row.includes(key));
   const x = grid.items[y].findIndex((item) => item === key);
@@ -82,15 +82,16 @@ export const gridPosition = (grid: WindowStoreState["grid"], key: string) => {
 export const getGridItemAdjacent = (
   grid: WindowStoreState["grid"],
   key: string,
-): { up?: string; left?: string; right?: string; down?: string } => {
+): { up?: string; left?: string; right?: string; down?: string; opposite?: string } => {
   if (!grid || !isInGrid(grid, key)) return {};
-  const { x, y } = gridPosition(grid, key) || {};
+  const { x, y } = getGridPosition(grid, key) || {};
   if (x === undefined || y === undefined) return {};
   return {
     up: grid.items[y - 1]?.[x],
     left: grid.items[y]?.[x - 1],
     right: grid.items[y]?.[x + 1],
     down: grid.items[y + 1]?.[x],
+    opposite: grid.items[y ? 0 : 1]?.[x ? 0 : 1],
   };
 };
 
@@ -105,12 +106,13 @@ export const getGridAdjacentWindows = (
   windows: WindowStoreState["windows"],
   key: string,
 ) => {
-  const { up, left, right, down } = getGridItemAdjacent(grid, key);
+  const { up, left, right, down, opposite } = getGridItemAdjacent(grid, key);
   return {
     up: up !== undefined ? { ...windows[up], key: up } : undefined,
     left: left !== undefined ? { ...windows[left], key: left } : undefined,
     right: right !== undefined ? { ...windows[right], key: right } : undefined,
     down: down !== undefined ? { ...windows[down], key: down } : undefined,
+    opposite: opposite !== undefined ? { ...windows[opposite], key: opposite } : undefined,
   };
 };
 
