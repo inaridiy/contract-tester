@@ -1,7 +1,17 @@
 import { create } from "zustand";
 
-export interface ContractStoreState {}
+import { ContractData } from "@/types/contract-data";
 
-export interface ContractStoreActions {}
+export interface ContractStoreState {
+  contracts: Record<string, ContractData>;
+}
 
-export const useContractStore = create<ContractStoreState & ContractStoreActions>((set) => ({}));
+export interface ContractStoreActions {
+  setContract: (contract: ContractData) => void;
+}
+
+export const useContractStore = create<ContractStoreState & ContractStoreActions>((set) => ({
+  contracts: {},
+  setContract: (contract) =>
+    set((state) => ({ contracts: { ...state.contracts, [contract.name]: contract } })),
+}));
