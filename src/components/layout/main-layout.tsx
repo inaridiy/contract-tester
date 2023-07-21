@@ -6,7 +6,7 @@ export const MainLayout: React.FC<{
       <header className="border-b">
         <nav className="flex h-8 items-center px-4"></nav>
       </header>
-      <main className="grid flex-1 grid-cols-6">{children}</main>
+      <main className="grid flex-1 grid-cols-5">{children}</main>
       <footer className="border-t">
         <nav className="flex h-8 items-center px-4"></nav>
       </footer>
