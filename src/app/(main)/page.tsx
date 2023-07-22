@@ -1,6 +1,6 @@
-import { Editor } from "@/components/editor/editor";
-import { Result } from "@/components/result/result";
-import { Sidebar } from "@/components/sidebar/sidebar";
+import { Editor } from "@/components/editor";
+import { Result } from "@/components/result";
+import { Sidebar } from "@/components/sidebar";
 
 export default function Home() {
   return (

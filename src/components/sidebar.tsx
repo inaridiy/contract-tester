@@ -7,8 +7,8 @@ import { cn } from "@/lib/utils";
 import { useContractStore } from "@/store/contract-store";
 import { ContractData } from "@/types/contract-data";
 
-import { ImportContractDataDialog } from "../dialogs/import-contract-dialog";
-import { Button } from "../ui/button";
+import { ImportContractDataDialog } from "./dialogs/import-contract-dialog";
+import { Button } from "./ui/button";
 
 export const Sidebar: React.FC<{ className: string }> = ({ className }) => {
   const contracts = useContractStore((state) => state.contracts);

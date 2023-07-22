@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -26,13 +26,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useContractStore } from "@/store/contract-store";
 import { ContractData } from "@/types/contract-data";
+import { alignToAbi } from "@/types/solidity";
 import { isJsonString } from "@/utils/validate";
 
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters long"),
   address: z.string().min(42, "Address must be 42 characters long").startsWith("0x"),
   abi: z.string().refine(isJsonString, "Must be a valid JSON string").optional(),
-  json: z.string().refine(isJsonString, "Must be a valid JSON string").optional(),
 });
 
 export const ImportContractDataDialog: React.FC<{
@@ -44,13 +44,14 @@ export const ImportContractDataDialog: React.FC<{
   const form = useForm<z.infer<typeof formSchema>>({ resolver: zodResolver(formSchema) });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    if (!values.abi && !values.json) return;
+    if (!values.abi) return;
 
+    const jsonParsedAbi = JSON.parse(values.abi);
     const contractData = {
       name: values.name,
       address: values.address,
-      abi: values.abi ? JSON.parse(values.abi) : undefined,
-      json: values.json ? JSON.parse(values.json) : undefined,
+      abi: jsonParsedAbi,
+      parsedAbi: alignToAbi(jsonParsedAbi),
     } satisfies ContractData;
 
     setContract(contractData);
@@ -97,9 +98,9 @@ export const ImportContractDataDialog: React.FC<{
                 )}
               />
               <Tabs defaultValue="abi">
-                <TabsList className="grid w-full grid-cols-3">
+                <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="abi">ABI</TabsTrigger>
-                  <TabsTrigger value="json">JSON Input</TabsTrigger>
+
                   <TabsTrigger value="auto">Auto Load</TabsTrigger>
                 </TabsList>
                 <TabsContent value="abi">
@@ -118,24 +119,7 @@ export const ImportContractDataDialog: React.FC<{
                     )}
                   />
                 </TabsContent>
-                <TabsContent value="json">
-                  <FormField
-                    control={form.control}
-                    name="json"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Standard JSON Input</FormLabel>
-                        <FormControl>
-                          <Textarea placeholder="{..." className="h-36" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          This is the standard JSON input for contract deployment.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </TabsContent>
+
                 <TabsContent value="auto">
                   <p>No auto load available yet.</p>
                 </TabsContent>

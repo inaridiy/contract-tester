@@ -1,15 +1,12 @@
+import { Abi } from "viem";
+
 export type ProxyType = "eip1822" | "eip1967"; // and more
 
 export interface ABIContractData {
   name: string;
   address: string;
   abi: any[];
+  parsedAbi: Abi;
 }
 
-export interface StandardJSONContractData {
-  name: string;
-  address: string;
-  json: any;
-}
-
-export type ContractData = ABIContractData | StandardJSONContractData;
+export type ContractData = ABIContractData;
